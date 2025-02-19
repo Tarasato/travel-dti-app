@@ -32,7 +32,25 @@ export const Register = () => {
     console.log(travellerFullname)
     console.log(travellerEmail)
     console.log(travellerPassword)
-  }
+
+    //validate UI
+    if(travellerFullname.trim.length == 0){
+      alert('กรุณากรอกชื่อ-นามสกุล')
+      return
+    }else if(travellerEmail.trim.length == 0){
+      alert('กรุณากรอกอีเมล')
+      return
+    }else if (travellerPassword.trim.length == 0){
+      alert('กรุณากรอกรหัสผ่าน')
+      return
+    }else if(travellerImage == null){
+      alert('กรุณาเลือกรูปภาพโปรไฟล์')
+      return
+    }else{
+      // send data to DB
+      
+    }
+}
 
   const SelectFileBt = styled('input')({
     clip: 'rect(0 0 0 0)',
