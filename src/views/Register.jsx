@@ -8,7 +8,7 @@ import {
   styled
 } from "@mui/material";
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import travel from "./../assets/travel.png";
 import profile from "./../assets/profile.png";
 
@@ -18,6 +18,8 @@ export const Register = () => {
   const [travellerFullname, setTravellerFullname] = useState('')
   const [travellerEmail, setTravellerEmail] = useState('')
   const [travellerPassword, setTravellerPassword] = useState('')
+
+  const navigator = useNavigate();
 
   const handleSelectFileClick = (e) => {
     const file = e.target.files[0];
@@ -32,23 +34,48 @@ export const Register = () => {
     console.log(travellerFullname)
     console.log(travellerEmail)
     console.log(travellerPassword)
+    if(travellerImage){
+      console.log(travellerImage)
+    }
 
     //validate UI
-    if(travellerFullname.trim.length == 0){
+    if(travellerFullname.length == 0){
       alert('กรุณากรอกชื่อ-นามสกุล')
       return
-    }else if(travellerEmail.trim.length == 0){
+    }else if(travellerEmail.length == 0){
       alert('กรุณากรอกอีเมล')
       return
-    }else if (travellerPassword.trim.length == 0){
+    }else if (travellerPassword.length == 0){
       alert('กรุณากรอกรหัสผ่าน')
-      return
-    }else if(travellerImage == null){
-      alert('กรุณาเลือกรูปภาพโปรไฟล์')
       return
     }else{
       // send data to DB
-      
+      const formData = new FormData();
+
+      formData.append('travellerFullname', travellerFullname)
+      formData.append('travellerEmail', travellerEmail)
+      formData.append('travellerPassword', travellerPassword)
+
+      if(travellerImage){
+        formData.append('travellerImage', travellerImage)
+      }
+
+      //ส่งข้อมูลไปที่ API ) POST (http://localhost:4000/traveller/)
+      try{
+        const response = await fetch('http://localhost:4000/traveller/', {
+          method: 'POST',
+          body: formData
+        })
+        if(response.status == 201){
+          alert('ลงทะเบียนสำเร็จ')
+          //navigator('/')
+          window.location.href = '/'
+        }else{
+          alert('ลงทะเบียนไม่สำเร็จ กรุณาลองใหม่อีกครั้ง')
+        }
+      }catch(error){
+        alert('เกิดข้อผิดพลาด: ', error)
+      }
     }
 }
 
