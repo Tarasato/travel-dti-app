@@ -11,7 +11,7 @@ import {
 import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
 import { useEffect, useState } from "react";
 import Profile from "./../assets/profile.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { styled } from "@mui/material/styles";
@@ -19,7 +19,8 @@ import { styled } from "@mui/material/styles";
 import Travel from "./../assets/travel.png";
 
 export const EditProfile = () => {
-  const [travellerFullname, setTravellerFullname] = useState("");
+  
+  const [travellerFullname, setTravellerFullname] = useState('');
   const [travellerImage, setTravellerImage] = useState("");
   const [travellerEmail, setTravellerEmail] = useState("");
   const [travellerPassword, setTravellerPassword] = useState("");
@@ -32,11 +33,12 @@ export const EditProfile = () => {
     //อ่านข้อมูลจาก memory เก็บในตัวแปร
     const traveller = JSON.parse(localStorage.getItem("traveller"));
     //เอาข้อมูลในตัวแปรกำหนดให้กับ state ที่สร้างไว้
+    setTravellerId(traveller.travellerId);
     setTravellerFullname(traveller.travellerFullname);
     setTravellerImage(traveller.travellerImage);
     setTravellerEmail(traveller.travellerEmail);
     setTravellerPassword(traveller.travellerPassword);
-    setTravellerId(traveller.setTravellerId);
+    console.log(traveller);
   }, []);
 
   const handleSelectFileClick = (e) => {
@@ -58,6 +60,45 @@ export const EditProfile = () => {
     whiteSpace: "nowrap",
     width: 1,
   });
+
+  const handleEditProfileClick = async (e) => {
+    e.preventDefault();
+    if (travellerFullname.length == 0) {
+      alert("ป้อนชื่อ-นามสกุลด้วย");
+    } else if (travellerEmail.length == 0) {
+      alert("ป้อนอีเมล์ด้วย");
+    } else if (travellerPassword.length == 0) {
+      alert("ป้อนรหัสผ่านด้วย");
+    } else {
+      //Send data to API, save to DB and redirect to Login page.
+      //Packing data
+      const formData = new FormData();
+      formData.append("travellerId", travellerId);
+      formData.append("travellerImage", travellerNewImage);
+      formData.append("travellerFullname", travellerFullname);
+      formData.append("travellerEmail", travellerEmail);
+      formData.append("travellerPassword", travellerPassword);
+      //Send data to API
+      try {
+        const response = await fetch(`http://localhost:4000/traveller/${travellerId}`, {
+          method: "PUT",
+          body: formData,
+        });
+        if (response.status == 200) {
+          alert("บันทึกการแก้ไขโปรไฟล์สําเร็จ");
+          navigator("/");
+           //window.location.href("/")
+        } else {
+          alert("บันทึกการแก้ไขโปรไฟล์ไม่สำเร็จโปรดลองใหม่อีกครั้ง, error code: " + response.status);
+          console.log(travellerId);
+        }
+      } catch (error) {
+        alert("พบข้อผิดพลาดในการบันทึกการแก้ไขโปรไฟล์", error);
+      }
+    }
+  };
+
+  const navigator = useNavigate();
 
   return (
     <>
@@ -186,8 +227,9 @@ export const EditProfile = () => {
             variant="contained"
             fullWidth
             sx={{ mt: 4, py: 2, backgroundColor: "#259e69" }}
+            onClick={handleEditProfileClick}
           >
-            แก้ไข Profile
+            บันทึกการแก้ไข
           </Button>
 
           <Link

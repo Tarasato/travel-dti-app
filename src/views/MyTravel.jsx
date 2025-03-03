@@ -25,11 +25,6 @@ export const MyTravel = () => {
     setTravellerFullname(traveller.travellerFullname);
     setTravellerEmail(traveller.travellerEmail);
     setTravellerImage(traveller.travellerImage);
-
-    console.log(traveller);
-    console.log('travellerFullname: ' + traveller.travellerFullname);
-    console.log('travellerEmail: ' + travellerEmail);
-    console.log('travellerImage: ' + travellerImage);
   }, []);
 
   return (
