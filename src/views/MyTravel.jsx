@@ -30,7 +30,7 @@ export const MyTravel = () => {
     console.log('travellerFullname: ' + traveller.travellerFullname);
     console.log('travellerEmail: ' + travellerEmail);
     console.log('travellerImage: ' + travellerImage);
-  }, [travellerEmail, travellerFullname, travellerImage]);
+  }, []);
 
   return (
     <>
@@ -49,7 +49,9 @@ export const MyTravel = () => {
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
               บันทึกการเดินทาง
             </Typography>
-            <Button color="inherit">{travellerFullname}</Button>
+            <Link to="/editprofile" style={{ color: "white" }}>
+              <Button color="inherit">{travellerFullname}</Button>
+              </Link>
             <Avatar
               src={
                 travellerImage

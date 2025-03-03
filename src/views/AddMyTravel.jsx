@@ -52,7 +52,7 @@ export const AddMyTravel = () => {
           method: "POST",
           body: formData,
         });
-        if (response.status == 200) {
+        if (response.status == 201) {
           alert("เพิ่มการเดินทางสําเร็จ");
           navigator("/mytravel");
         }else{
@@ -102,11 +102,6 @@ export const AddMyTravel = () => {
     setTravellerEmail(traveller.travellerEmail);
     setTravellerImage(traveller.travellerImage);
     setTravellerId(traveller.travellerId);
-
-    console.log('travellerFullname: ' + travellerFullname);
-    console.log('travellerEmail: ' + travellerEmail);
-    console.log('travellerImage: ' + travellerImage);
-    console.log('travellerId: ' + travellerId);
   }, []);
 
   return (
@@ -121,7 +116,9 @@ export const AddMyTravel = () => {
               aria-label="menu"
               sx={{ mr: 2 }}
             >
-              <FlightTakeoffIcon sx={{ color: "white" }} />
+              <Link to="/mytravel">
+                  <FlightTakeoffIcon sx={{ color: "white" }} />
+                </Link>
             </IconButton>
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
               เพิ่มการเดินทาง
@@ -231,6 +228,7 @@ export const AddMyTravel = () => {
             variant="contained"
             fullWidth
             sx={{ mt: 2, py: 2, backgroundColor: "#259e69" }}
+            onClick={handleSaveTravelClick}
           >
             บันทึกการเดินทาง
           </Button>
