@@ -19,7 +19,7 @@ export const App = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/mytravel" element={<MyTravel />} />
         <Route path="/editprofile" element={<EditProfile />} />
-        <Route path="/editmytravel" element={<EditMyTravel />} />
+        <Route path="/editmytravel/:travelId" element={<EditMyTravel />} />
         <Route path="/addmytravel" element={<AddMyTravel />} />
       </Routes>
     </BrowserRouter>

@@ -7,15 +7,24 @@ import {
   Typography,
   Button,
   Avatar,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
 } from "@mui/material";
 import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
 import Profile from "./../assets/profile.png";
+import Place from "./../assets/place.png";
 import { Link } from "react-router-dom";
 
 export const MyTravel = () => {
-  const [travellerFullname, setTravellerFullname] = useState('');
-  const [travellerEmail, setTravellerEmail] = useState('');
-  const [travellerImage, setTravellerImage] = useState('');
+  const [travellerFullname, setTravellerFullname] = useState("");
+  const [travellerEmail, setTravellerEmail] = useState("");
+  const [travellerImage, setTravellerImage] = useState("");
+  const [travel, setTravel] = useState([]);
 
   useEffect(() => {
     //เอาข้อมูลใน Memory มาแสดงที่ Appbar
@@ -25,7 +34,41 @@ export const MyTravel = () => {
     setTravellerFullname(traveller.travellerFullname);
     setTravellerEmail(traveller.travellerEmail);
     setTravellerImage(traveller.travellerImage);
+
+    //ดึงข้อมูลจาก DB ของ Traveller ที่ Login เข้ามา เพื่อแสดง
+    const getAllTravel = async () => {
+      const resData = await fetch(
+        `http://localhost:4000/travel/${traveller.travellerId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (resData.status == 200) {
+        const data = await resData.json();
+        setTravel(data["data"]);
+      }
+    };
+    getAllTravel();
   }, []);
+
+  //delete travel
+  const handleDeleteTravelClick = async (travelId) => {
+    const response = await fetch(`http://localhost:4000/travel/${travelId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (response.status == 200) {
+      alert("ลบข้อมูลสำเร็จ");
+      window.location.reload();
+    }else{
+      alert("ลบข้อมูลไม่สำเร็จกรุณาลองใหม่อีกครั้ง error code: " + response.status);
+    }
+  };
 
   return (
     <>
@@ -46,7 +89,7 @@ export const MyTravel = () => {
             </Typography>
             <Link to="/editprofile" style={{ color: "white" }}>
               <Button color="inherit">{travellerFullname}</Button>
-              </Link>
+            </Link>
             <Avatar
               src={
                 travellerImage
@@ -73,15 +116,74 @@ export const MyTravel = () => {
           variant="h3"
           component={"div"}
           fontWeight={"bold"}
-          sx={{ textAlign: "center" }}
+          sx={{ textAlign: "center", mb: 4 }}
         >
           การเดินทางของฉัน
         </Typography>
-        <Link to="/addmytravel" style={{ textDecoration: "none" }}>
+
+        {/*แสดงผลการเดินทาง*/}
+
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <TableHead>
+              <TableRow sx={{ backgroundColor: "#aaaaaa" }}>
+                <TableCell align="center">ลำดับ</TableCell>
+                <TableCell align="center">สถานที่ไป</TableCell>
+                <TableCell align="center">รูป</TableCell>
+                <TableCell align="center">วันที่ไป</TableCell>
+                <TableCell align="center">วันที่กลับ</TableCell>
+                <TableCell align="center">ค่าใช้จ่ายทั้งหมด</TableCell>
+                <TableCell align="center"></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {travel.map((row, index) => (
+                <TableRow
+                  key={index}
+                  sx={{
+                    "&:last-child td, &:last-child th": { border: 0 },
+                    backgroundColor: index % 2 == 0 ? "white" : "lightblue",
+                  }}
+                >
+                  <TableCell align="center">{index + 1}</TableCell>
+                  <TableCell align="left">{row.travelPlace}</TableCell>
+                  <TableCell align="left">
+                    <Avatar
+                      src={
+                        row.travelImage == "" || null
+                          ? Place
+                          : `http://localhost:4000/images/travel/${row.travelImage}`
+                      }
+                      sx={{ width: 60, height: 60, boxShadow: 3 }}
+                      variant="rounded"
+                    />
+                  </TableCell>
+                  <TableCell align="left">{row.travelStartDate}</TableCell>
+                  <TableCell align="left">{row.travelEndDate}</TableCell>
+                  <TableCell align="left">{row.travelCostTotal}</TableCell>
+                  <TableCell align="center">
+                    <Button component={Link} to={`/editmytravel/${row.travelId}`}>แก้ไข</Button>
+                    <Button onClick={() => handleDeleteTravelClick(row.travelId)}>ลบ</Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        {/* */}
+
+        <Link
+          to="/addmytravel"
+          style={{
+            textDecoration: "none",
+            fontWeight: "bold",
+          }}
+        >
           <Button
             fullWidth
             variant="contained"
-            sx={{ py: 2, color: "white", fontWeight: "bold" }}
+            sx={{ py: 2, color: "white", mt: 4 }}
           >
             เพิ่มการเดินทาง
           </Button>

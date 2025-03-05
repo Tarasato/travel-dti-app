@@ -21,6 +21,7 @@ import Travel from "./../assets/travel.png";
 export const EditProfile = () => {
   
   const [travellerFullname, setTravellerFullname] = useState('');
+  const [travellerNewFullname, setTravellerNewFullname] = useState('');
   const [travellerImage, setTravellerImage] = useState("");
   const [travellerEmail, setTravellerEmail] = useState("");
   const [travellerPassword, setTravellerPassword] = useState("");
@@ -35,10 +36,10 @@ export const EditProfile = () => {
     //เอาข้อมูลในตัวแปรกำหนดให้กับ state ที่สร้างไว้
     setTravellerId(traveller.travellerId);
     setTravellerFullname(traveller.travellerFullname);
+    setTravellerNewFullname(traveller.travellerFullname);
     setTravellerImage(traveller.travellerImage);
     setTravellerEmail(traveller.travellerEmail);
     setTravellerPassword(traveller.travellerPassword);
-    console.log(traveller);
   }, []);
 
   const handleSelectFileClick = (e) => {
@@ -63,7 +64,7 @@ export const EditProfile = () => {
 
   const handleEditProfileClick = async (e) => {
     e.preventDefault();
-    if (travellerFullname.length == 0) {
+    if (travellerNewFullname.length == 0) {
       alert("ป้อนชื่อ-นามสกุลด้วย");
     } else if (travellerEmail.length == 0) {
       alert("ป้อนอีเมล์ด้วย");
@@ -75,7 +76,7 @@ export const EditProfile = () => {
       const formData = new FormData();
       formData.append("travellerId", travellerId);
       formData.append("travellerImage", travellerNewImage);
-      formData.append("travellerFullname", travellerFullname);
+      formData.append("travellerFullname", travellerNewFullname);
       formData.append("travellerEmail", travellerEmail);
       formData.append("travellerPassword", travellerPassword);
       //Send data to API
@@ -86,14 +87,15 @@ export const EditProfile = () => {
         });
         if (response.status == 200) {
           alert("บันทึกการแก้ไขโปรไฟล์สําเร็จ");
-          navigator("/");
+          const data = await response.json();
+          localStorage.setItem('traveller', JSON.stringify(data["data"]))
+          navigator("/mytravel");
            //window.location.href("/")
         } else {
           alert("บันทึกการแก้ไขโปรไฟล์ไม่สำเร็จโปรดลองใหม่อีกครั้ง, error code: " + response.status);
-          console.log(travellerId);
         }
       } catch (error) {
-        alert("พบข้อผิดพลาดในการบันทึกการแก้ไขโปรไฟล์", error);
+        alert("พบข้อผิดพลาดในการบันทึกการแก้ไขโปรไฟล์ error: " + error);
       }
     }
   };
@@ -174,8 +176,8 @@ export const EditProfile = () => {
           {/* TextField travellerFullname */}
           <TextField
             fullWidth
-            value={travellerFullname}
-            onChange={(e) => setTravellerFullname(e.target.value)}
+            value={travellerNewFullname}
+            onChange={(e) => setTravellerNewFullname(e.target.value)}
           />
           <Typography sx={{ fontWeight: "bold", mt: 4, mb: 1 }}>
             ชื่อผู้ใช้ (E-Mail)
@@ -201,7 +203,7 @@ export const EditProfile = () => {
             src={
               travellerNewImage == null
                 ? `http://localhost:4000/images/traveller/${travellerImage}`
-                : URL.createObjectURL(travellerNewImage)
+                : travellerNewImage != null ? URL.createObjectURL(travellerNewImage) : Profile
             }
             alt="travel logo"
             sx={{ width: 150, height: 150, mx: "auto", my: 3 }}
